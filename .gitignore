@@ -1,0 +1,6 @@
+assets/src/
+data/**
+!data/custom-builds/
+!data/src/
+!data/tmp/
+!**/.gitkeep
