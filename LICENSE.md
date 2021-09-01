@@ -1,4 +1,4 @@
-# PHPjed builder
+# PHPjed
 
 Copyright (c) 2021 Misaki F. (https://github.com/phpjed)
 
