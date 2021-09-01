@@ -22,7 +22,7 @@ SOFTWARE.
 
 # Javascript files
 
-Copyright (c) 2021 Misaki F. (https://github.com/phpjed)
+Copyright (c) 2021 Misaki F. (https://github.com/phpjed)  
 Copyright (c) 2007-2016 Kevin van Zonneveld (https://kvz.io)
                         and Contributors (https://locutus.io/authors)
 
