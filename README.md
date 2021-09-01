@@ -1,6 +1,6 @@
 # About PHPjed
 
-![PHPjed](https://repository-images.githubusercontent.com/402124671/5a9b7ee9-b467-4b8c-baad-73e1b6988528)
+![PHPjed](https://repository-images.githubusercontent.com/402211811/0d69f853-7827-4269-88ac-657ff48e42a8)
 
 PHPjed (*PHP javascripted*) brings PHP on your browser. It's a collection of about 275 PHP functions ported to Javascript and ready to be used on a website as a small client-side library (27kB minified and gzipped). A few examples of PHP functions ported are `array_multisort`, `date`, `htmlentities`, `isset`, `preg_replace`, `setcookie`, `str_replace`, `trim`, etc.
 
@@ -10,19 +10,19 @@ Include the minified file on your website. There are two PHPjed distributions:
 
 1. The light distribution has 273 functions (92kB minified, 27kB gzipped\*). The following HTML tag includes the latest version:
 
-		<script src="/dist/phpjed.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed.min.js"></script>
 
 	It's possible to include a specific version, for example 1.0:
 
-		<script src="/dist/phpjed-1.0.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed-1.0.min.js"></script>
 
 2. The complete distribution has 287 functions (142kB minified, 43kB gzipped\*). The following HTML tag includes the latest version:
 
-		<script src="/dist/phpjed-all.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed-all.min.js"></script>
 
 	It's possible to include a specific version, for example 1.0:
 
-		<script src="/dist/phpjed-1.0-all.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed-1.0-all.min.js"></script>
 
 	This distribution contains the functions from the light distribution and also includes the following functions:
 	
