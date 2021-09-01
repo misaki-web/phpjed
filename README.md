@@ -41,18 +41,20 @@ Include the minified file on your website. There are two PHPjed distributions:
 	- `xdiff_string_diff`
 	- `xdiff_string_patch`
 
-All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://github.com/phpjed/phpjed/version.txt>.
+All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/phpjed/phpjed/main/version.txt>.
 
-\*: *When servers are configured to send data compressed with the deflate algorithm, this is the actual size of the file downloaded by users.*
+(\*): *When servers are configured to send data compressed with the deflate algorithm, this is the actual size of the file downloaded by users.*
 
 # Usage
 
 After including PHPjed on your website, functions are invoked using the *namespace* `phpjed`. Examples:
 
-	var subject = "Hello world.";
-	var search = ["Hello", "world"];
-	var replace = ["Hi", "everybody"];
-	var hi_everybody = phpjed.str_replace(search, replace, subject);
+```javascript
+var subject = "Hello world.";
+var search = ["Hello", "world"];
+var replace = ["Hi", "everybody"];
+var hi_everybody = phpjed.str_replace(search, replace, subject);
+```
 
 # PHP functions ported to Javascript
 
