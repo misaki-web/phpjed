@@ -41,7 +41,7 @@ Include the minified file on your website. There are two PHPjed distributions:
 	- `xdiff_string_diff`
 	- `xdiff_string_patch`
 
-All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/phpjed/phpjed/main/version.txt>.
+All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/phpjed/phpjed/main/version.txt>. Note that unminified versions of PHPjed are present in the folder `dist/unminified`.
 
 (\*): *When servers are configured to send data compressed with the deflate algorithm, this is the actual size of the file downloaded by users.*
 

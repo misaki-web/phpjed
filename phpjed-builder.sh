@@ -154,6 +154,42 @@ awk_calc() {
 	LC_NUMERIC=C awk "BEGIN { printf \"%.${scale}f\", $calc }"
 }
 
+# Beautify the specified file
+beautify_file() {
+	local file=$1
+	
+	local beautifier_name ret_beautifier tmp_file
+	declare -a beautifier_command
+	
+	# ------------------
+	
+	tmp_file=$(create_tmp "$file" false)
+	beautifier_name=${BEAUTIFIER_FOLDER##*/}
+	beautifier_command=("$beautifier_name" -b collapse -d -e $'\n' --indent-empty-lines -n -O before-newline)
+	beautifier_command+=(-t -w 100 -o "$tmp_file" "$file")
+	
+	msg "Beautifying with the following command:"$'\n'"${beautifier_command[*]}"
+	
+	ret_beautifier=$(run_python_virt "$BEAUTIFIER_FOLDER" "${beautifier_command[@]}" 2>&1)
+	
+	if [[ ! -f $tmp_file ]]; then
+		add_warning "Failed to beautify the file \"$file\":"$'\n'"$ret_beautifier"
+	else
+		mv "$tmp_file" "$file"
+	fi
+}
+
+# Exit after trying unsuccessfully to enter an emplacement
+cd_exit() {
+	local emplacement=$1
+	
+	# ------------------
+	
+	msg "Can't enter the emplacement \"$emplacement\"." "err"
+	
+	custom_exit 1
+}
+
 # Check for potential issues with the final Javascript file after the builder process finished
 check_file() {
 	local input=$1
@@ -211,7 +247,7 @@ convert_for_browser_usage() {
 	# ------------------
 	
 	if [[ ! -f $input ]]; then
-		msg "The file \"$input\" doesn't exist." "err"
+		add_warning "The file \"$input\" doesn't exist."
 	else
 		msg "Conversion of \"$input\" for browser usage (client-side library) and saving to \"$output\"."
 		
@@ -259,6 +295,59 @@ convert_for_browser_usage() {
 		sed_comms+="#"
 		sed -Ei "$sed_comms" "$output"
 	fi
+}
+
+# Create a temporary file in the emplacement specified.
+# 
+# If the first argument is a folder, the temporary file will be created in this folder.
+# 
+# If it's a file, the temporary file will be created in the same folder and the name of
+# the file will be used in the temporary file name.
+# 
+# If it's empty, the default temporary folder will be used.
+# 
+# If the second argument equals "false", the temporary file won't be created, but the path
+# generated will be returned.
+create_tmp() {
+	local path=$1
+	local create=$2
+	
+	local emplacement mktemp_u_arg pattern tmp_file
+	
+	# ------------------
+	
+	if [[ $create != false && $create != true ]]; then
+		create=true
+	fi
+	
+	pattern="XXXX"
+	
+	if [[ -f $path || -d $path ]]; then
+		emplacement=$(realpath "$path")
+		
+		if [[ -f $path ]]; then
+			emplacement=${emplacement%/*}
+			pattern+="-${path##*/}"
+		fi
+	else
+		emplacement=$(get_tmp_folder)
+	fi
+	
+	if [[ ! -d $emplacement ]]; then
+		msg "The folder \"$emplacement\" doesn't exist." "err"
+	else
+		if [[ $create == false ]]; then
+			mktemp_u_arg="-u"
+		fi
+		
+		tmp_file=$(mktemp $mktemp_u_arg -p "$emplacement" -t "$pattern")
+		
+		if [[ ! -f $tmp_file && $create == true ]]; then
+			msg "Can't create a temporary file in \"$emplacement\"." "err"
+		fi
+	fi
+	
+	echo -n "$tmp_file"
 }
 
 # Check for warnings before exiting
@@ -804,6 +893,54 @@ in_array() {
 	return "$status"
 }
 
+# Install a Python package on a virtual environment
+install_python_virt() {
+	local package_name=$1
+	local name=$2
+	local folder=$3
+	
+	local dependencies_installed package_path working_dir
+	declare -a install_command
+	
+	# ------------------
+	
+	package_path="$folder/bin/$name"
+	dependencies_installed=true
+	
+	if ! type -p virtualenv > /dev/null; then
+		dependencies_installed=false
+		msg "The package \"python3-virtualenv\" must be installed." "err"
+	fi
+	
+	if ! type -p pip3 > /dev/null; then
+		dependencies_installed=false
+		msg "The package \"python3-pip\" must be installed." "err"
+	fi
+	
+	if [[ ! -e $folder ]]; then
+		mkdir -p "$folder"
+	fi
+	
+	if [[ ! -d $folder ]]; then
+		msg "The folder \"$folder\" can't be created." "err"
+	elif [[ $dependencies_installed == true ]]; then
+		if [[ ! -e "$folder/bin/activate" ]]; then
+			virtualenv "$folder"
+		fi
+		
+		if [[ ! -f "$folder/bin/activate" ]]; then
+			msg "Can't create a virtual environment in \"$folder\"." "err"
+		elif [[ ! -f $package_path ]]; then
+			install_command=(pip3 install "$package_name")
+			run_python_virt "$folder" "${install_command[@]}"
+		fi
+		
+		if [[ ! -f $package_path ]]; then
+			msg "Can't install the package at the emplacement \"$package_path\"." "err"
+		fi
+	fi
+}
+
 # Test if the folder is empty
 is_empty() {
 	local folder=$1
@@ -833,12 +970,12 @@ merge_files() {
 	# ------------------
 	
 	if [[ ! -f $input ]]; then
-		msg "The file \"$input\" doesn't exist." "err"
+		add_warning "The file \"$input\" doesn't exist."
 	else
 		dir=${input%/*}
 		working_dir=$(pwd)
 		
-		cd -- "$dir" || { msg "Can't enter the emplacement \"$dir\"." "err" && custom_exit 1; }
+		cd -- "$dir" || cd_exit "$dir"
 		
 		while IFS= read -r line || [[ -n $line ]]; do
 			required=$(sed -E "s/.+\brequire\s*\(\s*([\"'])([^\"']+)\1\s*\).*/\2/" <<< "$line")
@@ -957,7 +1094,7 @@ merge_files() {
 			fi
 		done < "$input"
 		
-		cd -- "$working_dir" || { msg "Can't enter the emplacement \"$dir\"." "err" && custom_exit 1; }
+		cd -- "$working_dir" || cd_exit "$working_dir"
 		
 		if [[ -n ${funcs_to_rename[*]} ]]; then
 			for func in "${!funcs_to_rename[@]}"; do
@@ -985,11 +1122,11 @@ minify() {
 	use_all_args=false
 	
 	if [[ ! -x $MINIFIER_PATH ]]; then
-		msg "The minifier \"$MINIFIER_PATH\" is not executable." "err"
+		add_warning "The minifier \"$MINIFIER_PATH\" is not executable."
 	elif [[ ! -f $input ]]; then
-		msg "The file \"$input\" doesn't exist." "err"
+		add_warning "The file \"$input\" doesn't exist."
 	elif [[ -f $output ]]; then
-		msg "The file \"$output\" already exists." "err"
+		add_warning "The file \"$output\" already exists."
 	else
 		args=(--minify --outfile="$output")
 		more_args=(--minify-whitespace --minify-identifiers --minify-syntax --legal-comments=none --keep-names --platform=browser)
@@ -1062,7 +1199,7 @@ prepend_to_file() {
 	# ------------------
 	
 	if [[ -n $text ]]; then
-		tmp_file=$(mktemp -p "${file%/*}" -t "${file##*/}-XXXX")
+		tmp_file=$(create_tmp "$file")
 		
 		if [[ ! -f $tmp_file ]]; then
 			add_warning "The temporary file \"$tmp_file\" can't be created. The text won't be prepended."
@@ -1086,6 +1223,27 @@ preview() {
 	content+="..."
 	
 	echo -n "$content"
+}
+
+# Activate the virtual environment specified in the first argument and run the commands specified
+# in the subsequent arguments.
+run_python_virt() {
+	local virt_folder=$1
+	declare -a commands=("${@:2}")
+	
+	local exit_status working_folder
+	
+	# ------------------
+	
+	working_dir=$(pwd)
+	cd -- "$virt_folder" || cd_exit "$virt_folder"
+	source "bin/activate"
+	"${commands[@]}"
+	exit_status=$?
+	deactivate
+	cd -- "$working_dir" || cd_exit "$working_dir"
+	
+	return "$exit_status"
 }
 
 # Tag files according to the specified tag
@@ -1342,6 +1500,23 @@ if [[ ! -f $MINIFIER_PATH || ! -x $MINIFIER_PATH ]]; then
 	custom_exit 1
 fi
 
+# Beautifier
+
+beautifier_name="js-beautify"
+beautifier_package_name="jsbeautifier"
+BEAUTIFIER_FOLDER="${FOLDERS[src]}/$beautifier_name"
+declare -r BEAUTIFIER_FOLDER
+
+if ! type -p "$beautifier_name" > /dev/null; then
+	install_python_virt "$beautifier_package_name" "$beautifier_name" "$BEAUTIFIER_FOLDER"
+fi
+
+if [[ ! -f "$BEAUTIFIER_FOLDER/bin/$beautifier_name" ]]; then
+	msg "Can't install the beautifier in \"$BEAUTIFIER_FOLDER\"." "err"
+	
+	custom_exit 1
+fi
+
 ################################################################################
 # SCRIPT
 ################################################################################
@@ -1393,12 +1568,14 @@ if [[ ! -f $browser_ready ]]; then
 	custom_exit 1
 fi
 
-prepend_to_file "$COPYRIGHT" "$browser_ready"
 rm "$merged"
 
 if [[ -f $merged ]]; then
 	add_warning "The temporary file \"$merged\" can't be deleted."
 fi
+
+beautify_file "$browser_ready"
+prepend_to_file "$COPYRIGHT" "$browser_ready"
 
 # Check if the merging, filtering and conversion processes missed a few cases
 #############################################################################
@@ -1461,6 +1638,21 @@ if [[ -f $minified ]]; then
 fi
 
 if [[ -z ${WARNINGS[*]} && $PHPJED_DIST == true ]]; then
+	cp "$browser_ready" "${FOLDERS[root]}/dist/unminified"
+	
+	file_name=${browser_ready##*/}
+	file_name_without_ext=${file_name%".js"}
+	file_ext=${file_name#"$file_name_without_ext"}
+	file_with_version="${FOLDERS[root]}/dist/unminified/${file_name_without_ext%"-all"}-$PHPJED_VERSION$file_ext"
+	
+	cp "$browser_ready" "$file_with_version"
+	
+	if [[ ! -f $file_with_version ]]; then
+		msg "Can't copy the file \"$browser_ready\" to \"$file_with_version\"." "err"
+		
+		exit 1
+	fi
+	
 	cp "$minified" "${FOLDERS[root]}/dist"
 	
 	file_name=${minified##*/}
