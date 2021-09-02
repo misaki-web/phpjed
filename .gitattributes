@@ -1,1 +1,2 @@
-dist/unminified/* linguist-vendored=false
+dist/unminified/phpjed.js linguist-vendored=false
+dist/unminified/phpjed-all.js linguist-vendored=false
