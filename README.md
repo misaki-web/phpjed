@@ -14,7 +14,7 @@ Include the minified file on your website. There are two PHPjed distributions:
 
 	It's possible to include a specific version, for example 1.0:
 
-		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed-1.0.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed@1.0/dist/phpjed.min.js"></script>
 
 2. The complete distribution has 287 functions (142kB minified, 43kB gzipped\*). The following HTML tag includes the latest version:
 
@@ -22,7 +22,7 @@ Include the minified file on your website. There are two PHPjed distributions:
 
 	It's possible to include a specific version, for example 1.0:
 
-		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed-1.0-all.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed@1.0/dist/phpjed-all.min.js"></script>
 
 	This distribution contains the functions from the light distribution and also includes the following functions:
 	
@@ -41,7 +41,7 @@ Include the minified file on your website. There are two PHPjed distributions:
 	- `xdiff_string_diff`
 	- `xdiff_string_patch`
 
-All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/phpjed/phpjed/main/version.txt>. Note that unminified versions of PHPjed are present in the folder `dist/unminified`.
+All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/phpjed/phpjed/main/version.txt>. Note that unminified and beautified versions of PHPjed are present in the folder `dist/unminified`.
 
 (\*): *When servers are configured to send data compressed with the deflate algorithm, this is the actual size of the file downloaded by users.*
 

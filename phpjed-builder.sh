@@ -1637,34 +1637,17 @@ if [[ -f $minified ]]; then
 	echo $'\n'
 fi
 
-if [[ -z ${WARNINGS[*]} && $PHPJED_DIST == true ]]; then
+if [[ -z ${WARNINGS[*]} && ($PHPJED_DIST == true || $PHPJED_DIST == "all") ]]; then
 	cp "$browser_ready" "${FOLDERS[root]}/dist/unminified"
-	
-	file_name=${browser_ready##*/}
-	file_name_without_ext=${file_name%".js"}
-	file_ext=${file_name#"$file_name_without_ext"}
-	file_with_version="${FOLDERS[root]}/dist/unminified/${file_name_without_ext%"-all"}-$PHPJED_VERSION$file_ext"
-	
-	cp "$browser_ready" "$file_with_version"
-	
-	if [[ ! -f $file_with_version ]]; then
-		msg "Can't copy the file \"$browser_ready\" to \"$file_with_version\"." "err"
-		
-		exit 1
-	fi
-	
 	cp "$minified" "${FOLDERS[root]}/dist"
 	
-	file_name=${minified##*/}
-	file_name_without_ext=${file_name%".min.js"}
-	file_ext=${file_name#"$file_name_without_ext"}
-	file_with_version="${FOLDERS[root]}/dist/${file_name_without_ext%"-all"}-$PHPJED_VERSION$file_ext"
-	
-	cp "$minified" "$file_with_version"
-	
-	if [[ ! -f $file_with_version ]]; then
-		msg "Can't copy the file \"$minified\" to \"$file_with_version\"." "err"
+	if [[ $PHPJED_DIST == "all" ]]; then
+		if [[ $INC_LARGE_FUNCS == true ]]; then
+			large_funcs_arg=false
+		else
+			large_funcs_arg=true
+		fi
 		
-		exit 1
+		PHPJED_DIST=true "${FOLDERS[root]}/$SCRIPT_NAME" "" $large_funcs_arg
 	fi
 fi
