@@ -10,19 +10,19 @@ Include the minified file on your website. There are two PHPjed distributions:
 
 1. The light distribution has 273 functions (92kB minified, 27kB gzipped\*). The following HTML tag includes the latest version:
 
-		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/misaki-web/phpjed/dist/phpjed.min.js"></script>
 
 	It's possible to include a specific version, for example 1.0:
 
-		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed@1.0/dist/phpjed.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/misaki-web/phpjed@1.0/dist/phpjed.min.js"></script>
 
 2. The complete distribution has 287 functions (142kB minified, 43kB gzipped\*). The following HTML tag includes the latest version:
 
-		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed/dist/phpjed-all.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/misaki-web/phpjed/dist/phpjed-all.min.js"></script>
 
 	It's possible to include a specific version, for example 1.0:
 
-		<script src="https://cdn.jsdelivr.net/gh/phpjed/phpjed@1.0/dist/phpjed-all.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/misaki-web/phpjed@1.0/dist/phpjed-all.min.js"></script>
 
 	This distribution contains the functions from the light distribution and also includes the following functions:
 	
@@ -41,7 +41,7 @@ Include the minified file on your website. There are two PHPjed distributions:
 	- `xdiff_string_diff`
 	- `xdiff_string_patch`
 
-All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/phpjed/phpjed/main/version.txt>. Note that unminified and beautified versions of PHPjed are present in the folder `dist/unminified`.
+All versions available are in the folder `dist`. The latest version number can be retrieved programmatically from the URL <https://raw.githubusercontent.com/misaki-web/phpjed/main/version.txt>. Note that unminified and beautified versions of PHPjed are present in the folder `dist/unminified`.
 
 (\*): *When servers are configured to send data compressed with the deflate algorithm, this is the actual size of the file downloaded by users.*
 
